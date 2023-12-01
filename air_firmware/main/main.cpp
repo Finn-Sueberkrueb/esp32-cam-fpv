@@ -36,7 +36,7 @@
 #include "circular_buffer.h"
 
 
-//#define WIFI_AP
+#define WIFI_AP
 
 #if defined WIFI_AP
     #define ESP_WIFI_MODE WIFI_MODE_AP
@@ -360,6 +360,28 @@ SemaphoreHandle_t s_fec_decoder_mux = xSemaphoreCreateBinary();
 Fec_Codec s_fec_decoder;
 
 /////////////////////////////////////////////////////////////////////////
+
+#define MAC_ADDR_SIZE 6
+
+uint8_t mac_address[6] = {0x00, 0x11, 0x22, 0x33, 0x44, 0x55};
+
+
+static void get_mac_address()
+{
+    uint8_t mac[MAC_ADDR_SIZE] = {0x00, 0x11, 0x22, 0x33, 0x44, 0x55};
+    esp_wifi_get_mac(ESP_WIFI_IF, mac);
+    ESP_LOGI("MAC address", "MAC address: %02x:%02x:%02x:%02x:%02x:%02x", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
+}
+
+static void set_mac_address(uint8_t *mac)
+{
+    esp_err_t err = esp_wifi_set_mac(ESP_WIFI_IF, mac);
+    if (err == ESP_OK) {
+        ESP_LOGI("MAC address", "MAC address successfully set to %02x:%02x:%02x:%02x:%02x:%02x", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
+    } else {
+        ESP_LOGE("MAC address", "Failed to set MAC address");
+    }
+}
 
 static TaskHandle_t s_sd_write_task = nullptr;
 static TaskHandle_t s_sd_enqueue_task = nullptr;
@@ -692,7 +714,7 @@ esp_err_t set_wifi_fixed_rate(WIFI_Rate value)
         WIFI_PHY_RATE_MCS7_SGI,
     };
     //esp_err_t err = esp_wifi_internal_set_fix_rate(ESP_WIFI_IF, true, (wifi_phy_rate_t)rates[(int)value]);
-    esp_err_t err = esp_wifi_config_80211_tx_rate(ESP_WIFI_IF, (wifi_phy_rate_t)rates[(int)value]);
+        esp_err_t err = esp_wifi_config_80211_tx_rate(ESP_WIFI_IF, (wifi_phy_rate_t)rates[(int)value]);
     //esp_err_t err = esp_wifi_internal_set_fix_rate(ESP_WIFI_IF, true, (wifi_phy_rate_t)value);
     if (err == ESP_OK)
         s_wlan_rate = value;
@@ -1143,6 +1165,9 @@ void setup_wifi()
         ESP_ERROR_CHECK(esp_wifi_set_storage(WIFI_STORAGE_RAM));
         ESP_ERROR_CHECK(esp_wifi_set_mode(ESP_WIFI_MODE));
     }
+
+    get_mac_address();
+    set_mac_address(mac_address);
 
     ESP_ERROR_CHECK(esp_wifi_start());
     ESP_ERROR_CHECK(esp_wifi_set_ps(WIFI_PS_NONE));
