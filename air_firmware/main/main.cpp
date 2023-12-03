@@ -37,9 +37,9 @@
 #include "esp_timer.h"
 
 
-static const char* TAG = "WiFi";
+static const char* TAG = "WiFi-main";
 
-#define WIFI_AP
+//#define WIFI_AP
 
 #if defined WIFI_AP
     #define ESP_WIFI_MODE WIFI_MODE_AP
@@ -755,7 +755,7 @@ IRAM_ATTR static void wifi_tx_proc(void *)
                     }
                     else //other errors
                     {
-                       // ESP_LOGW(TAG, "Wlan err: %d\n", res);
+                        // ESP_LOGW(TAG, "Wlan err: %d\n", res);
                         s_stats.wlan_error_count++;
                         xSemaphoreTake(s_wlan_outgoing_mux, portMAX_DELAY);
                         end_reading_wlan_outgoing_packet(packet);
@@ -906,7 +906,7 @@ void setup_wifi()
     ESP_ERROR_CHECK(esp_wifi_set_tx_done_cb(wifi_tx_done));
 #endif
 
-    ESP_ERROR_CHECK(set_wifi_fixed_rate(s_ground2air_config_packet.wifi_rate));
+    ESP_ERROR_CHECK(set_wifi_fixed_rate(s_ground2air_config_packet.wifi_rate));    
     ESP_ERROR_CHECK(esp_wifi_set_channel(11, WIFI_SECOND_CHAN_NONE));
 
     wifi_promiscuous_filter_t filter = 
@@ -1188,7 +1188,7 @@ extern "C" void app_main()
     ground2air_config_packet.type = Ground2Air_Header::Type::Config;
     ground2air_config_packet.size = sizeof(ground2air_config_packet);
     ground2air_config_packet.wifi_rate = WIFI_Rate::RATE_G_54M_ODFM;
-
+    
     srand(esp_timer_get_time());
 
     printf("Initializing...\n");
@@ -1240,6 +1240,7 @@ extern "C" void app_main()
         }
 
         vTaskDelay(10);
+        // TODO: get Watchdog on IDF Version 5
         //esp_task_wdt_reset();
 
         update_status_led();
