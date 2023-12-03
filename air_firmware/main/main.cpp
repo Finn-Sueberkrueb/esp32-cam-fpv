@@ -906,8 +906,11 @@ void setup_wifi()
     ESP_ERROR_CHECK(esp_wifi_set_tx_done_cb(wifi_tx_done));
 #endif
 
+    wifi_country_t country = {.cc = "JP", .schan = 1, .nchan = 14, .policy = WIFI_COUNTRY_POLICY_MANUAL};
+    ESP_ERROR_CHECK(esp_wifi_set_country(&country));
+
     ESP_ERROR_CHECK(set_wifi_fixed_rate(s_ground2air_config_packet.wifi_rate));    
-    ESP_ERROR_CHECK(esp_wifi_set_channel(11, WIFI_SECOND_CHAN_NONE));
+    ESP_ERROR_CHECK(esp_wifi_set_channel(14, WIFI_SECOND_CHAN_NONE));
 
     wifi_promiscuous_filter_t filter = 
     {
