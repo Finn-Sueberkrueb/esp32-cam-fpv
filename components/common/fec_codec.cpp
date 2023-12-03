@@ -3,6 +3,8 @@
 #include <algorithm>
 #include "esp_task_wdt.h"
 #include "safe_printf.h"
+//#include "esp_timer.h"
+
 
 static constexpr unsigned BLOCK_NUMS[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
                                            10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
@@ -395,7 +397,7 @@ IRAM_ATTR void Fec_Codec::encoder_task_proc()
         {
             if (1)
             {
-                uint64_t start = esp_timer_get_time();
+                //uint64_t start = esp_timer_get_time();
 
                 //init data for the fec_encode
                 for (size_t i = 0; i < m_descriptor.coding_k; i++)
@@ -422,7 +424,7 @@ IRAM_ATTR void Fec_Codec::encoder_task_proc()
                     }
                 }
 
-                ENCODER_LOG("Encoded fec: %d\n", (int)(esp_timer_get_time() - start));
+                //ENCODER_LOG("Encoded fec: %d\n", (int)(esp_timer_get_time() - start));
             }
 
             ENCODER_LOG("Returning packets: %d\n", uxQueueSpacesAvailable(m_encoder.packet_pool));
@@ -469,7 +471,7 @@ IRAM_ATTR bool Fec_Codec::encode_data(const void* _data, size_t size, bool block
             crt_packet.size = 0;
         }
 
-        size_t s = std::min(m_descriptor.mtu - crt_packet.size, size);
+        size_t s = std::min(static_cast<size_t>(m_descriptor.mtu - crt_packet.size), size);
         size_t offset = crt_packet.size;
         memcpy(crt_packet.data + sizeof(Packet_Header) + offset, data, s);
         data += s;
@@ -622,7 +624,7 @@ IRAM_ATTR bool Fec_Codec::decode_data(const void* _data, size_t size, bool block
         }
         else //we got the header, store only the data now
         {
-            size_t s = std::min(m_descriptor.mtu - crt_packet.size, size);
+            size_t s = std::min(static_cast<size_t>(m_descriptor.mtu - crt_packet.size), size);
             size_t offset = crt_packet.size;
             memcpy(crt_packet.data + offset, data, s);
             data += s;

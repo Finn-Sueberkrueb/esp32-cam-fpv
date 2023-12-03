@@ -23,6 +23,7 @@
 #include "soc/gpio_sig_map.h"
 #include "soc/i2s_reg.h"
 #include "soc/i2s_struct.h"
+#include "hal/gpio_ll.h"
 #include "soc/io_mux_reg.h"
 #include "driver/gpio.h"
 #include "driver/rtc_io.h"
@@ -36,6 +37,8 @@
 #include "esp_camera.h"
 #include "camera_common.h"
 #include "xclk.h"
+#include "esp_timer.h"
+
 #if CONFIG_OV2640_SUPPORT
 #include "ov2640.h"
 #endif
@@ -388,18 +391,18 @@ static void i2s_init()
     camera_config_t* config = &s_state->config;
 
     // Route input GPIOs to I2S peripheral using GPIO matrix
-    gpio_matrix_in(config->pin_d0, I2S0I_DATA_IN0_IDX, false);
-    gpio_matrix_in(config->pin_d1, I2S0I_DATA_IN1_IDX, false);
-    gpio_matrix_in(config->pin_d2, I2S0I_DATA_IN2_IDX, false);
-    gpio_matrix_in(config->pin_d3, I2S0I_DATA_IN3_IDX, false);
-    gpio_matrix_in(config->pin_d4, I2S0I_DATA_IN4_IDX, false);
-    gpio_matrix_in(config->pin_d5, I2S0I_DATA_IN5_IDX, false);
-    gpio_matrix_in(config->pin_d6, I2S0I_DATA_IN6_IDX, false);
-    gpio_matrix_in(config->pin_d7, I2S0I_DATA_IN7_IDX, false);
-    gpio_matrix_in(config->pin_vsync, I2S0I_V_SYNC_IDX, false);
-    gpio_matrix_in(0x38, I2S0I_H_SYNC_IDX, false);
-    gpio_matrix_in(config->pin_href, I2S0I_H_ENABLE_IDX, false);
-    gpio_matrix_in(config->pin_pclk, I2S0I_WS_IN_IDX, false);
+    esp_rom_gpio_connect_in_signal(config->pin_d0, I2S0I_DATA_IN0_IDX, false);
+    esp_rom_gpio_connect_in_signal(config->pin_d1, I2S0I_DATA_IN1_IDX, false);
+    esp_rom_gpio_connect_in_signal(config->pin_d2, I2S0I_DATA_IN2_IDX, false);
+    esp_rom_gpio_connect_in_signal(config->pin_d3, I2S0I_DATA_IN3_IDX, false);
+    esp_rom_gpio_connect_in_signal(config->pin_d4, I2S0I_DATA_IN4_IDX, false);
+    esp_rom_gpio_connect_in_signal(config->pin_d5, I2S0I_DATA_IN5_IDX, false);
+    esp_rom_gpio_connect_in_signal(config->pin_d6, I2S0I_DATA_IN6_IDX, false);
+    esp_rom_gpio_connect_in_signal(config->pin_d7, I2S0I_DATA_IN7_IDX, false);
+    esp_rom_gpio_connect_in_signal(config->pin_vsync, I2S0I_V_SYNC_IDX, false);
+    esp_rom_gpio_connect_in_signal(0x38, I2S0I_H_SYNC_IDX, false);
+    esp_rom_gpio_connect_in_signal(config->pin_href, I2S0I_H_ENABLE_IDX, false);
+    esp_rom_gpio_connect_in_signal(config->pin_pclk, I2S0I_WS_IN_IDX, false);
 
     // Enable and configure I2S peripheral
     periph_module_enable(PERIPH_I2S0_MODULE);

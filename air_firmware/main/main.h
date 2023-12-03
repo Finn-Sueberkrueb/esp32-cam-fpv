@@ -18,8 +18,6 @@ struct Stats
     uint16_t wlan_received_packets_dropped = 0;
     uint32_t video_data = 0;
     uint16_t video_frames = 0;
-    uint32_t sd_data = 0;
-    uint32_t sd_drops = 0;
 };
 
 extern Stats s_stats;

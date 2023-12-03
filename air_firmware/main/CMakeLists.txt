@@ -5,4 +5,4 @@ set(srcs
     main.cpp queue.cpp)
 
 idf_component_register(SRCS "${srcs}"
-                    INCLUDE_DIRS "")
+                    INCLUDE_DIRS "" "$ENV{IDF_PATH}/components/driver/gpio/include" "$ENV{IDF_PATH}/components/esp_timer/include")
